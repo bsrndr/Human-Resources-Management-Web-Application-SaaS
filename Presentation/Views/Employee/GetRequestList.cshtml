@@ -1,0 +1,101 @@
+﻿@using Presentation.Models.VMs.Leave;
+@model List<LeaveAppUserVM>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<p>
+    <a class="btn btn-outline-primary" asp-action="CreateLeaveRequest">Create Leave Request</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Requested Days
+            </th>
+            <th>
+                Leave Status
+            </th>
+            <th>
+                Leave Type
+            </th>
+            <th>
+                Start Date
+            </th>
+            <th>
+                End Date
+            </th>
+            <th>
+                Date of Request
+            </th>
+            <th>
+                Date of Response
+            </th>
+            <th>
+                Actions
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+
+            var startDate = item.StartDate.Date.ToString("yyyy-MM-dd");
+            var endDate = item.EndDate.Date.ToString("yyyy-MM-dd");
+
+
+            <tr>
+
+                <td>
+                    <div class="text-center">
+                        @Html.DisplayFor(modelItem => item.NumberOfRequestedDays)
+                    </div>
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.LeaveStatus)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LeaveType)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem =>startDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => endDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DateOfRequest)
+                </td>
+                <td>
+                    @if (item.DateofResponse == null)
+                    {
+                        <p class="text-center">---</p>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => item.DateofResponse)
+                    }
+                </td>
+                <td>
+                    @if (item.LeaveStatus == "Waiting")
+                    {
+                        <a class="btn btn-outline-danger" asp-action="DeleteRequest" asp-route-id="@item.Id" onclick="return confirm('Are you sure you want to delete this leave ?')">Delete</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (TempData is not null && TempData.ContainsKey("info"))
+{
+    <script>
+        var message = "@TempData["info"]";
+        alert(message);
+
+    </script>
+}
+

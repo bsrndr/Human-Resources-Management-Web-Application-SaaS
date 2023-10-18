@@ -1,0 +1,157 @@
+﻿@using Presentation.Models.VMs.Login;
+@model LoginVM
+@{
+    Layout = null;
+}
+
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!--===============================================================================================-->
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Style -->
+    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="shortcut icon" href="~/images/mini-logo-human.png" />
+    <title>Human Resources</title>
+</head>
+<body>
+    <div class="content">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <img src="images/undraw_remotely_2j6y.svg" alt="Image" class="img-fluid">
+                </div>
+                <div class="col-md-6 contents">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <div class="mb-4">
+                                <h3>Sign In</h3>
+                            </div>
+                            <form asp-action="Login" method="post">
+                                <div class="form-group first">
+                                    <label>User Name</label>
+                                    <input type="text" class="form-control" id="username" asp-for="UserName">
+                                </div>
+                                <br />
+                                <div class="form-group last">
+                                    <label>Password</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control passwordd" id="password" asp-for="Password">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text show-hide-password" style="border: none; background-color: transparent;">
+                                                <i class="far fa-eye" style="color: #858585;"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex mb-5 align-items-center">
+                                    <label class="control control--checkbox mb-0">
+                                        @*                               <span class="caption">Remember me</span>
+                                        <input type="checkbox" checked="checked" />
+                                        <div class="control__indicator"></div>*@
+                                    </label>
+                                    <span class="ml-auto"><a href="#" class="forgot-pass" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">Forgot Password</a></span>
+                                </div>
+                                <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="forgotPasswordModalLabel">Forgot Password</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Enter your email address to receive a password reset link.</p>                                              
+                                                <input type="email" class="form-control" id="forgotPasswordEmail" placeholder="Enter your email">
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <button type="button" class="btn btn-primary" onclick="sendThisEmailAddress()">Send Reset Link</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-block btn-primary" value="Login">Login</button>
+                                @if(TempData["Error"] != null)
+                                {
+                                    <br />
+                                    <span class="text-danger">@TempData["Error"]</span>
+                                }
+                                @*<input type="submit" value="Log In" class="btn btn-block btn-primary" asp-action="Index" asp-controller="SiteManager">*@
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/login.js"></script>
+    <script>
+
+        const serviceAddress = "https://hrtechwebapi.azurewebsites.net/api/SıgnIn/";
+
+        $(document).ready(function () {
+            $('#forgotPasswordModal').on('shown.bs.modal', function () {
+                $('#forgotPasswordEmail').focus(); // Modal açıldığında email input'a odaklan
+            });
+        });
+
+        async function sendThisEmailAddress() {
+            let _mail = document.getElementById("forgotPasswordEmail").value;
+            const postData = {
+                email: _mail
+            };
+
+            if (_mail != "") {
+                try {
+                    let response = await fetch(serviceAddress + "sendmail", {
+                        method: "POST",
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(postData)
+                    });
+
+                    let data = await response.json();
+                    console.log(data);
+                    $('#forgotPasswordModal').modal('hide');
+                } catch (error) {
+                    console.error('Error', error);
+                }
+            }
+        }
+        document.querySelectorAll('.show-hide-password').forEach(function (button) {
+            button.addEventListener('click', function () {
+                var passwordInput = this.closest('.input-group').querySelector('.passwordd');
+                var icon = this.querySelector('i');
+
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+@if (TempData is not null && TempData.ContainsKey("info"))
+{
+    <script>
+        var message = "@TempData["info"]";
+        alert(message);
+    </script>
+}

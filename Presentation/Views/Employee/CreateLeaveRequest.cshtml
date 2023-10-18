@@ -1,0 +1,124 @@
+﻿@using Presentation.Models.VMs.Leave;
+@model CreateLeaveVM
+@{
+    string descriptions = ViewBag.Description;
+}
+<div class="main-container">
+    <div class="pd-ltr-20">
+        <form asp-action="CreateLeaveRequest" method="post" id="CreateLeaveRequestForm">
+            <div class="d-flex justify-content-evenly flex-row">
+                <div class="col-md-4">
+                    <div class="mb-3 d-flex justify-content-center" style="font-size:20px; font-weight:bold">
+                        <label class="form-label">Create Leave Request</label>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Leave Type</label>
+                        <select asp-items="@ViewBag.LeaveType" name="leaveId" class="form-control" id="leaveType"></select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <div id="description" style="color:red">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Number Of Requested Days</label>
+                        <input type="number" class="form-control" id="numberOfRequestedDays" asp-for="NumberOfRequestedDays" placeholder="1" min="1" max="">
+
+                        <span asp-validation-for="NumberOfRequestedDays" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Start Date</label>
+                        <input type="date" class="form-control" asp-for="StartDate" placeholder="Start Date" id="StartDate">
+                        <span asp-validation-for="StartDate" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <input type="submit" class="form-control btn btn-success" value="Save">
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Start Date alanını dinleyin ve bugünden önceki tarihleri engelleyin
+        $("#StartDate").on("change", function () {
+            var selectedDate = new Date($(this).val());
+            var today = new Date();
+
+            if (selectedDate < today) {
+                alert("You cannot select a date before today!");
+                $(this).val(""); // Seçili tarihi temizleyin
+            }
+        });
+    });
+    $(document).ready(function () {
+        // Bu işlemi bir fonksiyon içine alıyoruz
+        function updateDescription(selectedValue) {
+            var des = document.getElementById("description");
+            var days = document.getElementById("numberOfRequestedDays");
+
+            if (selectedValue == 1) {
+                des.innerHTML = "14 days per year for 1-5 years of experience"
+                days.max = 14;
+                days.min = 1;
+            }
+            else if (selectedValue == 2) {
+                des.innerHTML = "20 days per year for 5-15 years of experience"
+                days.max = 20;
+                days.min = 1;
+            }
+            else if (selectedValue == 3) {
+                des.innerHTML = "24 days per year for 15+ years of experience"
+                days.max = 24;
+                days.min = 1;
+            }
+            else if (selectedValue == 4) {
+                des.innerHTML = "8 weeks before birth and 8 weeks after birth"
+                days.max = 56;
+                days.min = 1;
+            }
+            else if (selectedValue == 5) {
+                des.innerHTML = "5 days after birth"
+                days.max=5;
+                days.min=1;
+            }
+            else if (selectedValue == 6) {
+                des.innerHTML = "3 days including wedding"
+                days.max = 3;
+                days.min = 1;
+            }
+            else if (selectedValue == 7) {
+                des.innerHTML = "Ask a permission to your manager"
+                days.min = 1;
+            }
+            else if (selectedValue == 8) {
+                des.innerHTML = "3 days including funeral"
+                days.max = 3;
+                days.min = 1;
+            }
+        }
+
+        // Sayfa yüklendiğinde ve select değiştiğinde aynı işlemi çalıştırın
+        updateDescription($("#leaveType").val());
+
+        $("#leaveType").on("change", function () {
+            var selectedValue = $(this).val();
+            updateDescription(selectedValue);
+        });
+    });
+
+</script>
+
+@if (TempData is not null && TempData.ContainsKey("info"))
+{
+    <script>
+        var message = "@TempData["info"]";
+        alert(message);
+    </script>
+}

@@ -1,0 +1,147 @@
+﻿@using Presentation.Models.Enums;
+@using Presentation.Models.VMs.Company;
+@model IEnumerable<CompanyVM>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<link href="~/css/toggle.css" rel="stylesheet" />
+<div class="d-flex justify-content-center">
+    <span id="caption" style="font-size: 24px; font-family: 'Nunito', sans-serif; font-weight:bold">Active Companies</span>
+</div>
+<p class="d-flex justify-content-between align-items-center">
+    <a class="btn btn-outline-primary" asp-action="AddCompany">Create New</a>
+    <input type="checkbox" checked id="switch" />
+    <label for="switch">Toggle</label>
+</p>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Logo
+            </th>
+            <th>
+                Company Name
+            </th>
+            <th>
+                CompantTitle
+            </th>
+            <th>
+                Address
+            </th>
+            <th>
+                Email
+            </th>
+            <th>
+                PhoneNumber
+            </th>
+            <th>
+                Details
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var company in Model)
+        {
+            <tr>
+                <td>
+                    <img src="~/company-logos/@company.ImagePath" style="border-radius: 50%; width: 150px; height: 150px;">
+                </td>
+                <td>@company.CompanyName</td>
+                <td>@company.CompantTitle</td>
+                <td style="width: 100px; white-space: normal">@company.Address</td>
+                <td>@company.Email</td>
+                <td>@company.PhoneNumber</td>
+                <td>
+                    <a class="btn btn-outline-dark ml-2" asp-controller="Company" asp-action="CompanyDetails" asp-route-id="@company.Id">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    document.addEventListener("DOMContentLoaded", async function () {
+        var toggle = document.getElementById("switch");
+        var rows = document.querySelectorAll(".company-row");
+        var tableBody = document.querySelector("tbody");
+        var tableCaption = document.getElementById("caption");
+
+        toggle.addEventListener("change", async function () {
+            if (toggle.checked) {
+                rows.forEach(function (row) {
+                    if (row.classList.contains("active")) {
+                        row.style.display = "table-row";
+                    } else {
+                        row.style.display = "none";
+                    }
+                });
+                tableCaption.textContent = "Active Companies"; // Başlığı güncelle
+            } else {
+                rows.forEach(function (row) {
+                    row.style.display = "table-row";
+                });
+                tableCaption.textContent = "Passive Companies"; // Başlığı güncelle
+            }
+
+            var statusValue = toggle.checked ? "active" : "passive";
+
+            // API isteği yaparak verileri al
+            var response = await fetch(`https://hrtechwebapi.azurewebsites.net/api/SiteManager/getcompanies` + statusValue);
+            var result = await response.json();
+
+            // Tabloyu güncelle
+            tableBody.innerHTML = ""; // Tabloyu temizle
+
+            result.forEach(function (company) {
+                var row = document.createElement("tr");
+                row.className = `company-row ${company.status === 0 ? "passive" : "active"}`;
+
+                var logoCell = document.createElement("td");
+                var logoImage = document.createElement("img");
+                var imagePath = '/company-logos/' + company.imagePath;
+                logoImage.src = imagePath;
+                logoImage.style.borderRadius = "50%";
+                logoImage.style.width = "150px";
+                logoImage.style.height = "150px";
+                logoCell.appendChild(logoImage);
+                row.appendChild(logoCell);
+
+                var otherCells = ["companyName", "compantTitle", "address", "email", "phoneNumber"];
+                otherCells.forEach(function (property) {
+                    var cell = document.createElement("td");
+                    cell.textContent = company[property];
+                    row.appendChild(cell);
+                });
+
+                var detailsCell = document.createElement("td");
+                var detailsLink = document.createElement("a");
+                detailsLink.className = "btn btn-outline-dark ml-2";
+                detailsLink.href = "#";
+
+                detailsLink.textContent = "Details";
+
+                detailsLink.addEventListener("click", function () {
+                    // JSON verisindeki id kullanarak view sayfasına yönlendir
+                    window.location.href = `/Company/CompanyDetails/${company.id}`;
+                });
+
+                detailsCell.appendChild(detailsLink);
+
+                row.appendChild(detailsCell);
+                tableBody.appendChild(row);
+            });
+        });
+    });
+</script>
+@if (TempData is not null && TempData.ContainsKey("info"))
+{
+    <script>
+        var message = "@TempData["info"]";
+        alert(message);
+    </script>
+}

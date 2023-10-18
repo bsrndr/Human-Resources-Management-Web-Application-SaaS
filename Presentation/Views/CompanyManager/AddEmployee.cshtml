@@ -1,0 +1,131 @@
+﻿@using Presentation.Models.VMs.Employee;
+@model CreateEmployeeVM
+
+<div class="main-container">
+    <div class="pd-ltr-20">
+        <form enctype="multipart/form-data" asp-action="AddEmployee" method="post">
+            <div class="d-flex justify-content-evenly flex-row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">Photo</label>
+                        <input type="file" class="form-control" asp-for="PostedPath" accept=".png,.jpg,.jpeg" id="fileUpload">
+                        <span asp-validation-for="PostedPath" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">First Name</label>
+                        <input type="text" class="form-control" asp-for="FirstName" placeholder="First Name">
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Second Name</label>
+                        <input type="text" class="form-control" asp-for="SecondFirstName" placeholder="Second Name">
+                        <span asp-validation-for="SecondFirstName" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Last Name</label>
+                        <input type="text" class="form-control" asp-for="LastName" placeholder="Last Name">
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Second Last Name</label>
+                        <input type="text" class="form-control" asp-for="SecondLastName" placeholder="Second Last Name">
+                        <span asp-validation-for="SecondLastName" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Gender</label>
+                        <div class="d-flex flex-row" style="column-gap: 16px">
+                            <div>
+                                <label for="Male">Male</label>
+                                <input asp-for="Gender" type="radio" value="Male" checked />
+                            </div>
+                            <div>
+                                <label for="Female">Female</label>
+                                <input asp-for="Gender" type="radio" value="Female" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Job Title</label>
+                        <input type="text" class="form-control" asp-for="Title" placeholder="Job Title">
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Place of Birth</label>
+                        <input type="text" class="form-control" asp-for="PlaceOfBirth" placeholder="Place Of Birth">
+                        <span asp-validation-for="PlaceOfBirth" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Birth Date</label>
+                        <input type="date" class="form-control" asp-for="BirthDate" minvalue="1990-01-01" maxvalue="2023-31-08" value="2000-01-01">
+                        <span asp-validation-for="BirthDate" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">TC</label>
+                        <input type="text" class="form-control" asp-for="Tc" placeholder="TC">
+                        <span asp-validation-for="Tc" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone Number</label>
+                        <input type="text" class="form-control" asp-for="PhoneNumber" placeholder="Phone">
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="text" class="form-control" asp-for="Email" placeholder="example@example.com">
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Address</label>
+                        <input type="text" class="form-control" asp-for="Address" placeholder="Address">
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Salary</label>
+                        <input type="number" class="form-control" asp-for="Salary" placeholder="Salary" min="1">
+                        <span asp-validation-for="Salary" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Date Of Recriutment</label>
+                        <input type="date" class="form-control" asp-for="DateOfRecruitment" value="2000-01-01" min="2000-01-01" max="2099-12-31">
+                        <span asp-validation-for="DateOfRecruitment" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Department</label>
+                        <select id="companyId" class="form-control" name="departmentId" asp-items="ViewBag.Departments"></select>
+                    </div>
+                    <input type="hidden" asp-for="CompanyId"/>
+                    <div class="mb-3 mt-5 d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary" style="width: 30%; height: 100%">Create</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#fileUpload").change(function () {
+            var fileName = $(this).val();
+            var validExtensions = [".jpg", ".png"];
+            var fileExtension = fileName.substring(fileName.lastIndexOf(".")).toLowerCase();
+            if ($.inArray(fileExtension, validExtensions) === -1) {
+                alert("Lütfen sadece .jpg ve .png uzantılı dosyaları yükleyin.");
+                $(this).val("");
+            }
+        });
+    });
+</script>
+
+@if (TempData is not null && TempData.ContainsKey("info"))
+{
+    <script>
+        var message = "@TempData["info"]";
+        alert(message);
+    </script>
+}

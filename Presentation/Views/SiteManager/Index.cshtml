@@ -1,0 +1,106 @@
+﻿@using Presentation.Models.VMs.SiteManager;
+
+@model UserVM
+<style>
+
+    .photo-container {
+        width: 400px;
+        height: 600px;
+        perspective: 800px;
+        transition: transform 0.5s, box-shadow 0.5s;
+    }
+
+    .photo {
+        width: 100%;
+        height: 100%;
+        transform: rotateY(3deg) rotateX(2deg);
+        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.5);
+        transition: transform 0.5s, box-shadow 0.5s;
+        border-radius: 5px;
+    }
+
+    .photo-container:hover .photo {
+        transform: rotateY(0deg) rotateX(0deg); /* Hover sırasında 3D efekti kaldırma */
+
+        box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.7); /* Hover sırasında gölgeyi artırma */
+    }
+
+</style>
+<div class="main-container">
+    <div class="pd-ltr-20">
+
+        <div class="card card-box pd-20 height-100-p mb-30">
+            <div class="row align-items-center">
+
+                <div class="col-md-5 m-3 m-5">
+                    <div class="photo-container">
+                        <img src="~/user-images/@Model.ImagePath" alt="" class="photo">
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card-body">
+
+                        <h2 id="welcome">
+                            Welcome @Model.FirstName
+                        </h2>
+                        <br />
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <td class="text-info"><strong>Name:</strong></td>
+                                    <td>@Model.FirstName @Model.SecondFirstName</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-info"><strong>Last Name:</strong></td>
+                                    <td>@Model.LastName @Model.SecondLastName</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-info"><strong>Title:</strong></td>
+                                    <td>@Model.Title</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-info"><strong>Department:</strong></td>
+                                    <td>@Model.DepartmentName</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-info"><strong>E-mail:</strong></td>
+                                    <td>@Model.Email</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-info"><strong>Address:</strong></td>
+                                    <td>@Model.Address</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-info"><strong>Phone:</strong></td>
+                                    <td>@Model.PhoneNumber</td>
+                                </tr>
+                                <br />
+                                <tr>
+                                    <td colspan="2">
+                                        <a class="btn btn-outline-success ml-2" asp-area="" asp-controller="SiteManager" asp-action="Details" asp-route-id="@Model.Id">Details</a>
+
+                                        <a class="btn btn-outline-primary ml-2" asp-area="" asp-controller="SiteManager" asp-action="Update" asp-route-id="@Model.Id">Update</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (TempData is not null && TempData.ContainsKey("info"))
+{
+    <script>
+        var message = "@TempData["info"]";
+        alert(message);
+    </script>
+}
+

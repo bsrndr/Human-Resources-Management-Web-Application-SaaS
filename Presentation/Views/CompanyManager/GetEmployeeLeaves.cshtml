@@ -1,0 +1,232 @@
+﻿@{
+    int id = int.Parse(User.FindFirst(ClaimTypes.PrimarySid).Value);
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<style>
+    .btnHover:hover {
+        background-color: #4B49AC; /* Arka plan rengini değiştirebilirsiniz */
+        color: #f8f8f8; /* Metin rengini değiştirebilirsiniz */ /* Diğer hover özelliklerini buraya ekleyebilirsiniz */
+    }
+</style>
+<nav>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <button class="nav-link active btnHover" id="nav-home-tab" style="border-top-left-radius:5px" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true" onclick="getWaitingRequests()">Pending</button>
+        <button class="nav-link btnHover" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false" onclick="getApprovedRequests()">Approved</button>
+        <button class="nav-link btnHover" id="nav-contact-tab" style="border-top-right-radius:5px" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false" onclick="getDeniedRequests()">Denied</button>
+    </div>
+</nav>
+<div class="tab-content" id="nav-tabContent" style="border-radius:5px">
+    <div class="tab-pane fade show active" id="list" role="tabpanel" aria-labelledby="nav-home-tab">...</div>
+    <div class="tab-pane fade" id="list" role="tabpanel" aria-labelledby="nav-profile-tab">...</div>
+    <div class="tab-pane fade" id="list" role="tabpanel" aria-labelledby="nav-contact-tab">...</div>
+</div>
+
+<div id="noData"></div>
+
+<script>
+    function clearList() {
+        let listDiv = document.getElementById("list");
+        listDiv.innerHTML = "";
+    }
+    function showNoDataMessage() {
+        const listDiv = document.getElementById("noData");
+        listDiv.innerHTML = "<p>Listelenecek bir şey yok.</p>";
+    }
+    async function getWaitingRequests() {
+        var response = await fetch('https://hrtechwebapi.azurewebsites.net/api/CompanyManager/getallwaitingrequests/' + @id)
+        var result = await response.json();
+        clearList();
+        if (result.length === 0) {
+            showNoDataMessage();
+        }
+
+        let tableData = "<table class='table table-striped'>";
+        tableData += "<thead>";
+        tableData += "<tr>";
+        tableData += "<th>Employee Name</th>";
+        tableData += "<th>Requested Days</th>";
+        tableData += "<th>Status</th>";
+        tableData += "<th>Type</th>";
+        tableData += "<th>Start Date</th>";
+        tableData += "<th>End Date</th>";
+        tableData += "<th>Request Date</th>";
+        tableData += "<th></th>"; // Added column for actions
+        tableData += "</tr>";
+        tableData += "</thead>";
+        tableData += "<tbody>";
+
+        // Assuming result is an array of WaitingLeaveAppUserDTO objects
+        result.forEach(item => {
+            tableData += "<tr>";
+            tableData += `<td>${item.employeeName}</td>`;
+            tableData += `<td>${item.numberOfRequestedDays}</td>`;
+            tableData += `<td>${item.leaveStatus}</td>`;
+            tableData += `<td>${item.leaveType}</td>`;
+            tableData += `<td>${new Date(item.startDate).toLocaleDateString()}</td>`;
+            tableData += `<td>${new Date(item.endDate).toLocaleDateString()}</td>`;
+            tableData += `<td>${new Date(item.dateOfRequest).toLocaleDateString()}</td>`;
+            tableData += "<td>";
+            tableData += `<a class="btn btn-outline-success" onclick="approveRequest(${item.id})"><i class="fa-solid fa-check" style="color: #26d123;"></i></a> `;
+            tableData += `<a class="btn btn-outline-danger" onclick="rejectRequest(${item.id})"><i class="fa-solid fa-xmark" style="color: #e12323;"></i></a>`;
+            tableData += "</td>";
+            tableData += "</tr>";
+        });
+
+        tableData += "</tbody>";
+        tableData += "</table>";
+
+        document.getElementById("list").innerHTML = tableData;
+    }
+
+
+
+    async function getApprovedRequests() {
+        var response = await fetch('https://hrtechwebapi.azurewebsites.net/api/CompanyManager/getallapprovedrequests/' + @id)
+        var result = await response.json();
+        clearList();
+        if (result.length === 0) {
+            showNoDataMessage();
+        }
+        let tableData = "<table class='table table-striped'>";
+        tableData += "<thead>";
+        tableData += "<tr>";
+        tableData += "<th>Employee Name</th>";
+        tableData += "<th>Requested Days</th>";
+        tableData += "<th>Status</th>";
+        tableData += "<th>Type</th>";
+        tableData += "<th>Start Date</th>";
+        tableData += "<th>End Date</th>";
+        tableData += "<th>Request Date</th>";
+        tableData += "<th>Response Date</th>";
+        tableData += "</tr>";
+        tableData += "</thead>";
+        tableData += "<tbody>";
+
+        // Assuming result is an array of WaitingLeaveAppUserDTO objects
+        result.forEach(item => {
+            tableData += "<tr>";
+            tableData += `<td>${item.employeeName}</td>`;
+            tableData += `<td>${item.numberOfRequestedDays}</td>`;
+            tableData += `<td>${item.leaveStatus}</td>`;
+            tableData += `<td>${item.leaveType}</td>`;
+            tableData += `<td>${new Date(item.startDate).toLocaleDateString()}</td>`;
+            tableData += `<td>${new Date(item.endDate).toLocaleDateString()}</td>`;
+            tableData += `<td>${new Date(item.dateOfRequest).toLocaleDateString()}</td>`;
+            tableData += `<td>${new Date(item.dateofResponse).toLocaleDateString()}</td>`;
+            tableData += "</tr>";
+        });
+
+        tableData += "</tbody>";
+        tableData += "</table>";
+
+        document.getElementById("list").innerHTML = tableData;
+    }
+
+
+    async function getDeniedRequests() {
+        var response = await fetch('https://hrtechwebapi.azurewebsites.net/api/CompanyManager/getalldeniedrequests/' + @id)
+        var result = await response.json();
+        clearList();
+        if (result.length === 0) {
+            showNoDataMessage();
+        }
+        let tableData = "<table class='table table-striped'>";
+        tableData += "<thead>";
+        tableData += "<tr>";
+        tableData += "<th>Employee Name</th>";
+        tableData += "<th>Requested Days</th>";
+        tableData += "<th>Status</th>";
+        tableData += "<th>Type</th>";
+        tableData += "<th>Start Date</th>";
+        tableData += "<th>End Date</th>";
+        tableData += "<th>Request Date</th>";
+        tableData += "<th>Response Date</th>";
+        tableData += "</tr>";
+        tableData += "</thead>";
+        tableData += "<tbody>";
+
+        // Assuming result is an array of WaitingLeaveAppUserDTO objects
+        result.forEach(item => {
+            tableData += "<tr>";
+            tableData += `<td>${item.employeeName}</td>`;
+            tableData += `<td>${item.numberOfRequestedDays}</td>`;
+            tableData += `<td>${item.leaveStatus}</td>`;
+            tableData += `<td>${item.leaveType}</td>`;
+            tableData += `<td>${new Date(item.startDate).toLocaleDateString()}</td>`;
+            tableData += `<td>${new Date(item.endDate).toLocaleDateString()}</td>`;
+            tableData += `<td>${new Date(item.dateOfRequest).toLocaleDateString()}</td>`;
+            tableData += `<td>${new Date(item.dateofResponse).toLocaleDateString()}</td>`;
+            tableData += "</tr>";
+        });
+
+        tableData += "</tbody>";
+        tableData += "</table>";
+
+        document.getElementById("list").innerHTML = tableData;
+
+    }
+
+    async function approveRequest(id) {
+        const confirmation = window.confirm('Are you sure you want to approve this request?');
+
+        if (confirmation) {
+            const requestOptions = {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({}),
+            };
+
+            const response = await fetch(`https://hrtechwebapi.azurewebsites.net/api/CompanyManager/approverequest/${id}`, requestOptions);
+
+            if (response.ok) {
+                await getWaitingRequests();
+                const result = await response.json();
+                console.log('Approval successful:', result);
+            } else {
+                console.error('Approval failed:', response.status);
+                console.error('Error message:', await response.text());
+            }
+        } else {
+            // User clicked "Cancel," do nothing
+        }
+    }
+
+    async function rejectRequest(id) {
+        const confirmation = window.confirm('Are you sure you want to reject this request?');
+        if (confirmation) {
+            const requestOptions = {
+                method: 'PUT', // PUT isteği yapmak için method'i 'PUT' olarak ayarlayın
+                headers: {
+                    'Content-Type': 'application/json', // İsteğin içeriği JSON olduğu varsayımıyla
+                },
+                // İstekte göndermek istediğiniz veriyi JSON formatında gönderin (isteğe bağlı)
+                // Örneğin: { approved: true } gibi
+                // JSON veri göndermek istemiyorsanız body kısmını kaldırabilirsiniz.
+                body: JSON.stringify({}),
+            };
+
+            const response = await fetch(`https://hrtechwebapi.azurewebsites.net/api/CompanyManager/approvedenied/${id}`, requestOptions);
+
+            if (response.ok) {
+                await getWaitingRequests();
+                const result = await response.json();
+                console.log('Approval successful:', result);
+            } else {
+                console.error('Approval failed:', response.status);
+                // Eğer sunucu hata mesajı gönderiyorsa, bu hatayı da yazdırabilirsiniz:
+                console.error('Error message:', await response.text());
+            }
+        }
+        else {
+            // User clicked "Cancel," do nothing
+        }
+    }
+
+    function onLoad() {
+        getWaitingRequests();
+    }
+    window.addEventListener("load", onLoad);
+
+</script>

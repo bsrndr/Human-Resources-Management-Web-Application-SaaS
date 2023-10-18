@@ -1,0 +1,264 @@
+﻿@{
+    int id = 0;
+    string role = null;
+    string imagePath = null;
+
+    if (!User.Identity.IsAuthenticated)
+    {
+        int redirectDelay = 0;
+
+        string redirectUrl = "/Login/Index";
+
+        string script = $@"
+<link rel=""stylesheet"" href=""/wwwroot/css/login.css"">
+<link rel=""stylesheet"" href=""/wwwroot/css/style.css"">
+<script>
+    setTimeout(function() {{
+        window.location.href = '{redirectUrl}';
+    }}, {redirectDelay});
+</script>
+";
+
+        @Html.Raw(script)
+    }
+    else
+    {
+        id = int.Parse(User.FindFirst(ClaimTypes.PrimarySid).Value);
+        role = User.FindFirst(ClaimTypes.Role).Value;
+        imagePath = User.FindFirst(ClaimTypes.Thumbprint).Value;
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Human Resources</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Presentation.styles.css" asp-append-version="true" />
+
+    <link rel="stylesheet" href="~/vendors/feather/feather.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/vendors/ti-icons/css/themify-icons.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/vendors/css/vendor.bundle.base.css" asp-append-version="true">
+
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true">
+
+    <link rel="stylesheet" href="~/vendors/datatables.net-bs4/dataTables.bootstrap4.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/vendors/ti-icons/css/themify-icons.css" asp-append-version="true">
+    <link rel="stylesheet" type="text/css" href="~/js/select.dataTables.min.css" asp-append-version="true">
+
+    <link rel="shortcut icon" href="~/images/mini-logo-human.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <div class="container-scroller">
+        <!-- partial:partials/_navbar.html -->
+        <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+            <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+                @if (role == "SiteManager")
+                {
+                    <a class="navbar-brand brand-logo mr-1" asp-controller="SiteManager" asp-action="Index"><img src="~/images/logo-human.png" class="mr-2" alt="logo" /></a>
+                    <a class="navbar-brand brand-logo-mini" asp-controller="SiteManager" asp-action="Index"><img src="~/images/mini-logo-human.png" alt="logo" /></a>
+                }
+                else if (role == "CompanyManager")
+                {
+                    <a class="navbar-brand brand-logo mr-1" asp-controller="CompanyManager" asp-action="Index"><img src="~/images/logo-human.png" class="mr-2" alt="logo" /></a>
+                    <a class="navbar-brand brand-logo-mini" asp-controller="CompanyManager" asp-action="Index"><img src="~/images/mini-logo-human.png" alt="logo" /></a>
+                }
+                else
+                {
+                    <a class="navbar-brand brand-logo mr-1" asp-controller="Employee" asp-action="Index"><img src="~/images/logo-human.png" class="mr-2" alt="logo" /></a>
+                    <a class="navbar-brand brand-logo-mini" asp-controller="Employee" asp-action="Index"><img src="~/images/mini-logo-human.png" alt="logo" /></a>
+                }
+            </div>
+
+            <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
+                <button class="navbar-toggler navbar-toggler align-self-center mr-1" type="button" data-toggle="minimize">
+                    <span class="icon-menu"></span>
+                </button>
+                <ul class="navbar-nav mr-lg-2">
+                    @*<li class="nav-item">
+                    <a class="nav-link text-dark" asp-area="" asp-controller="SiteManager" asp-action="">Bos Sekme</a>
+                    </li>*@
+                </ul>
+                <ul class="navbar-nav navbar-nav-right">
+                    <li class="nav-item nav-profile dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
+                            <img src="~/user-images/@imagePath" alt="profile" />
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
+                            <a class="dropdown-item" asp-action="Index" asp-controller="ProfileSettings">
+                                <i class="ti-settings text-primary"></i>
+                                Settings
+                            </a>
+                            <a class="dropdown-item" asp-action="Index" asp-controller="Logout">
+                                <i class="ti-power-off text-primary"></i>
+                                Logout
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+                <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+                    <span class="icon-menu"></span>
+                </button>
+            </div>
+        </nav>
+        <!-- partial -->
+        <div class="container-fluid page-body-wrapper">
+            <nav class="sidebar sidebar-offcanvas" id="sidebar">
+                <ul class="nav">
+
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+                            <i class="icon-layout menu-icon"></i>
+                            <span class="menu-title">Profile</span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        @if (role == "SiteManager")
+                        {
+                            <div class="collapse" id="ui-basic">
+                                <ul class="nav flex-column sub-menu">
+                                    <li class="nav-item"> <a class="nav-link" asp-controller="SiteManager" asp-action="Index" asp-route-id="@id">Main Page</a></li>
+                                    <li class="nav-item"> <a class="nav-link" asp-controller="SiteManager" asp-action="Details" asp-route-id="@id">My Details</a></li>
+                                    <li class="nav-item"> <a class="nav-link" asp-controller="SiteManager" asp-action="Update" asp-route-id="@id">Update Info</a></li>
+                                </ul>
+                            </div>
+                        }
+                        else if (role == "CompanyManager")
+                        {
+                            <div class="collapse" id="ui-basic">
+                                <ul class="nav flex-column sub-menu">
+                                    <li class="nav-item"> <a class="nav-link" asp-controller="CompanyManager" asp-action="Index" asp-route-id="@id">Main Page</a></li>
+                                    <li class="nav-item"> <a class="nav-link" asp-controller="CompanyManager" asp-action="CompanyManagerDetails" asp-route-id="@id">My Details</a></li>
+                                    <li class="nav-item"> <a class="nav-link" asp-controller="CompanyManager" asp-action="UpdateCompanyManager" asp-route-id="@id">Update Info</a></li>
+                                </ul>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="collapse" id="ui-basic">
+                                <ul class="nav flex-column sub-menu">
+                                    <li class="nav-item"> <a class="nav-link" asp-controller="Employee" asp-action="Index" asp-route-id="@id">Main Page</a></li>
+                                    <li class="nav-item"> <a class="nav-link" asp-controller="Employee" asp-action="EmployeeDetails" asp-route-id="@id">My Details</a></li>
+                                    <li class="nav-item"> <a class="nav-link" asp-controller="Employee" asp-action="UpdateEmployee" asp-route-id="@id">Update Info</a></li>
+                                </ul>
+                            </div>
+                        }
+                    </li>
+                    @if (role == "SiteManager")
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
+                                <i class="icon-columns menu-icon"></i>
+                                <span class="menu-title">Company Affairs</span>
+                                <i class="menu-arrow"></i>
+                            </a>
+                            <div class="collapse" id="form-elements">
+                                <ul class="nav flex-column sub-menu">
+                                    <li class="nav-item"><a class="nav-link" asp-controller="Company" asp-action="AddCompany">Add New Company</a></li>
+                                </ul>
+                                <ul class="nav flex-column sub-menu">
+                                    <li class="nav-item"><a class="nav-link" asp-controller="Company" asp-action="Index">Company List</a></li>
+                                </ul>
+
+                                <ul class="nav flex-column sub-menu">
+                                    <li class="nav-item"><a class="nav-link" asp-controller="SiteManager" asp-action="AddCompanyManager">Add Company Manager</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                    }
+                    else if (role == "CompanyManager")
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
+                                <i class="icon-columns menu-icon"></i>
+                                <span class="menu-title">Company Affairs</span>
+                                <i class="menu-arrow"></i>
+                            </a>
+                            <div class="collapse" id="form-elements">
+                                <ul class="nav flex-column sub-menu">
+                                    <li class="nav-item"><a class="nav-link" asp-controller="Company" asp-action="GetCompanyId" asp-route-directory="details" asp-route-id="@id">My Company</a></li>
+                                </ul>
+                                <ul class="nav flex-column sub-menu">
+                                    <li class="nav-item"><a class="nav-link" asp-controller="Company" asp-action="GetCompanyId" asp-route-directory="addemployee" asp-route-id="@id">Add Employee</a></li>
+                                </ul>
+                                <ul class="nav flex-column sub-menu">
+                                    <li class="nav-item"><a class="nav-link" asp-controller="CompanyManager" asp-action="GetEmployeeLeaves" asp-route-id="@id">Employee Leave List</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
+                                <i class="icon-columns menu-icon"></i>
+                                <span class="menu-title">Company Affairs</span>
+                                <i class="menu-arrow"></i>
+                            </a>
+                            <div class="collapse" id="form-elements">
+                                <ul class="nav flex-column sub-menu">
+                                    <li class="nav-item"><a class="nav-link" asp-action="GetRequestList" asp-controller="Employee" asp-route-id="@id">Leave Requests</a></li>
+                                </ul>
+                                <ul class="nav flex-column sub-menu">
+                                    <li class="nav-item"><a asp-controller="Employee" asp-action="CreateLeaveRequest" class="nav-link">Create Leave Request</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </nav>
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    <main role="main" class="pb-3">
+
+                        @RenderBody()
+                    </main>
+
+                </div>
+                <footer class="footer position-relative">
+                    <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                        <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Connect <a href="#" target="_blank">Human Resources Web App</a> BilgeAdam Boost Team 3 . All rights reserved.</span>
+
+                    </div>
+                    <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                        <span class="text-muted text-center text-sm-left d-block d-sm-inline-block"><a asp-controller="About" asp-action="Index" target="_blank">About Us</a></span>
+                    </div>
+                </footer>
+            </div>
+
+            <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+            <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+            <script src="~/lib/jquery/dist/jquery.min.js"></script>
+            <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+            <script src="~/js/site.js" asp-append-version="true"></script>
+            <!-- plugins:js -->
+            <script src="~/vendors/js/vendor.bundle.base.js"></script>
+            <!-- endinject -->
+            <!-- Plugin js for this page -->
+            <script src="~/vendors/chart.js/Chart.min.js"></script>
+            <script src="~/vendors/datatables.net/jquery.dataTables.js"></script>
+            <script src="~/vendors/datatables.net-bs4/dataTables.bootstrap4.js"></script>
+            <script src="~/js/dataTables.select.min.js"></script>
+
+            <!-- End plugin js for this page -->
+            <!-- inject:js -->
+            <script src="~/js/off-canvas.js"></script>
+            <script src="~/js/hoverable-collapse.js"></script>
+            <script src="~/js/template.js"></script>
+            <script src="~/js/settings.js"></script>
+            <script src="~/js/todolist.js"></script>
+            <!-- endinject -->
+            <!-- Custom js for this page-->
+            <script src="~/js/dashboard.js"></script>
+            <script src="~/js/Chart.roundedBarCharts.js"></script>
+            @await RenderSectionAsync("Scripts", required: false)
+        </div>
+    </div>
+</body>
+
+
+
+</html>

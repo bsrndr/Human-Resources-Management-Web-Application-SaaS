@@ -1,0 +1,109 @@
+﻿@using Presentation.Models.VMs.Company;
+@model CreateCompanyVM
+
+<div class="main-container">
+    <div class="pd-ltr-20">
+        <form enctype="multipart/form-data" asp-action="AddCompany" method="post">
+            <div class="d-flex justify-content-evenly flex-row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">Logo</label>
+                        <input type="file" class="form-control" asp-for="Logo" accept=".png,.jpg,.jpeg" id="fileUpload" >
+                        <span asp-validation-for="Logo" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Company Name</label>
+                        <input type="text" class="form-control" asp-for="CompanyName" placeholder="Company Name">
+                        <span asp-validation-for="CompanyName" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Company Title</label>
+                        <input type="text" class="form-control" asp-for="CompantTitle" placeholder="Company Title">
+                        <span asp-validation-for="CompantTitle" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">MERSIS</label>
+                        <input type="text" class="form-control" asp-for="Mersis" placeholder="MERSIS">
+                        <span asp-validation-for="Mersis" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tax Number</label>
+                        <input type="text" class="form-control" asp-for="TaxNumber" placeholder="Tax Number">
+                        <span asp-validation-for="TaxNumber" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tax Office</label>
+                        <input type="text" class="form-control" asp-for="TaxOffice" placeholder="Tax Office">
+                        <span asp-validation-for="TaxOffice" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone Number</label>
+                        <input type="text" class="form-control" asp-for="PhoneNumber" placeholder="Phone">
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="text" class="form-control" asp-for="Email" placeholder="example@example.com">
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3" style="border-radius: 5px; padding: 5px; width: 100%; box-sizing: border-box;">
+                        <label class="form-label" style="display: block; margin-bottom: 5px;">Address</label>
+                        <textarea class="form-control" asp-for="Address" placeholder="Address" style="resize: none; border: 1px solid #ccc; border-radius: 5px; padding: 10px; width: 100%; box-sizing: border-box; height:120px"></textarea>
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Number Of Employees</label>
+                        <input type="number" class="form-control" asp-for="NumberOfEmployees" placeholder="123">
+                        <span asp-validation-for="NumberOfEmployees" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Date Of Establishment</label>
+                        <input type="date" class="form-control" asp-for="DateOfEstablishment" value="2000-01-01" min="1900-01-01" max="2023-08-31">
+                        <span asp-validation-for="DateOfEstablishment" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Contrat Start Date</label>
+                        <input type="date" class="form-control" asp-for="ContratStartDate" value="2000-01-01" min="2000-01-01" max="2099-12-31">
+                        <span asp-validation-for="ContratStartDate" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Contrat End Date</label>
+                        <input type="date" class="form-control" asp-for="ContratEndDate" value="2000-01-01" min="2000-01-01" max="2099-12-31">
+                        <span asp-validation-for="ContratEndDate" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3 mt-5 d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary" style="width: 30%; height: 100%">Create</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $("#fileUpload").change(function () {
+            var fileName = $(this).val();
+            var validExtensions = [".jpg", ".png"];
+            var fileExtension = fileName.substring(fileName.lastIndexOf(".")).toLowerCase();
+            if ($.inArray(fileExtension, validExtensions) === -1) {
+                alert("Lütfen sadece .jpg ve .png uzantılı dosyaları yükleyin.");
+                $(this).val("");
+            }
+        });
+    });
+</script>
+
+@if (TempData is not null && TempData.ContainsKey("info"))
+{
+    <script>
+        var message = "@TempData["info"]";
+        alert(message);
+    </script>
+}

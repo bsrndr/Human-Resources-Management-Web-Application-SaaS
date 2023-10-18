@@ -1,0 +1,136 @@
+﻿@using Presentation.Models.VMs.Password;
+@model ChangePasswordVM
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="css/login.css">
+<div class="main-container">
+    <div class="pd-ltr-20">
+        <div class="card card-box pd-20 height-100-p mb-30 pb-4">
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h2 class="text-center" style="color:#6C7383; margin-left:350px">Change Password</h2>
+                        <br /><br />
+                        <form method="post" asp-action="ChangePassword">
+                            <table class="table table-borderless justify-content-center">
+                                <tbody>
+                                    <tr>
+                                        <td class="text-info" align="right"><strong>Current Password:</strong></td>
+                                        <td>
+
+                                            <div class="input-group">
+                                                <input type="password" asp-for="CurrentPassword" class="form-control passwordd" id="currentPassword">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text show-hide-password" style="border: none; background-color: transparent;">
+                                                        <i class="far fa-eye" style="color: #858585;"></i>
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                        </td>
+
+                                    </tr>
+                                    <tr>
+                                        <td class="text-info" align="right"><strong>New Password:</strong></td>
+                                        <td>
+                                            <div class="input-group">
+                                                <input type="password" asp-for="NewPassword" class="form-control passwordd" id="NewPassword" />
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text show-hide-password" style="border: none; background-color: transparent;">
+                                                        <i class="far fa-eye" style="color: #858585;"></i>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </td>                                          
+                                    </tr>
+                                    <tr>
+                                        <td class="text-info" align="right"><strong>Confirm Password:</strong></td>
+                                        <td>
+                                            <div class="input-group">
+                                                <input type="password" class="form-control passwordd" id="ConfirmPassword" />
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text show-hide-password" style="border: none; background-color: transparent;">
+                                                        <i class="far fa-eye" style="color: #858585;"></i>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="10">
+                                            <div style="margin-left:40%">
+                                                <div style="margin-left:30%">
+                                                    <span id="passwordMatchError" style="color: red;"></span> <br />
+                                                    <span id="passwordSameError" style="color: red;"></span> <br />
+                                                </div>
+                                                <br />
+                                                <input type="submit" value="Save" class="btn btn-outline-info btn-light ml-5" style="width:530px" />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="alert alert-danger">
+                                        @if (TempData["ErrorMessage"] != null)
+                                        {
+                                            <td colspan="2">@TempData["ErrorMessage"]</td>
+                                        }
+                                    </tr>
+                                </tbody>
+                            </table>
+                                    <span class="text-danger" asp-validation-for="NewPassword"></span>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-2"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/login.js"></script>
+<script>
+    // Confirm Password alanının değiştiğinde kontrol yap
+    document.getElementById("ConfirmPassword").addEventListener("keyup", function () {
+        var newPassword = document.getElementById("NewPassword").value;
+        var confirmPassword = this.value;
+        var currentPassword = document.getElementById("currentPassword").value;
+
+        if (newPassword !== confirmPassword) {
+            document.getElementById("passwordMatchError").textContent = "Passwords do not match";
+        }
+        else {
+            document.getElementById("passwordMatchError").textContent = "";
+        }
+        if (currentPassword == confirmPassword) {
+            document.getElementById("passwordSameError").textContent = "\nPassword can not be same as Current Password";
+        }
+        else {
+            document.getElementById("passwordSameError").textContent = "";
+        }
+    });
+
+    document.querySelectorAll('.show-hide-password').forEach(function (button) {
+        button.addEventListener('click', function () {
+            var passwordInput = this.closest('.input-group').querySelector('.passwordd');
+            var icon = this.querySelector('i');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    });
+</script>
+
+@if (TempData is not null && TempData.ContainsKey("info"))
+{
+    <script>
+        var message = "@TempData["info"]";
+        alert(message);
+    </script>
+}

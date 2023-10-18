@@ -1,0 +1,7 @@
+﻿.btnDarken {
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.btnDarken:active {
+    background-color: #2c2b64;
+}

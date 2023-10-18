@@ -1,0 +1,116 @@
+﻿@using Presentation.Models.VMs.CompanyManager;
+@model CompanyManagerDetailsVM
+@{
+    string role = User.FindFirst(ClaimTypes.Role).Value;
+}
+<style>
+
+    .photo-container {
+        width: 400px;
+        height: 600px;
+        perspective: 800px;
+        transition: transform 0.5s, box-shadow 0.5s;
+    }
+
+    .photo {
+        width: 100%;
+        height: 100%;
+        transform: rotateY(3deg) rotateX(2deg);
+        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.5);
+        transition: transform 0.5s, box-shadow 0.5s;
+        border-radius: 5px;
+    }
+
+    .photo-container:hover .photo {
+        transform: rotateY(0deg) rotateX(0deg); /* Hover sırasında 3D efekti kaldırma */
+
+        box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.7); /* Hover sırasında gölgeyi artırma */
+    }
+
+</style>
+<div class="main-container">
+    <div class="pd-ltr-20">
+
+        <div class="card card-box pd-20 height-100-p mb-30 pb-4">
+            <div class="row align-items-center">
+
+                <div class="col-md-5 m-3 m-5">
+                    <div class="photo-container">
+                        <img src="~/user-images/@Model.ImagePath" alt="" class="photo">
+                    </div>
+                </div>
+
+                <div class="col-md-5">
+                    <div class="card-body">
+                        <h2 id="welcome">
+                            User Details
+                        </h2>
+                        <br />
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <td class="text-info"><strong>Name:</strong></td>
+                                    <td>@Model.FirstName @Model.SecondFirstName</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-info"><strong>Last Name:</strong></td>
+                                    <td>@Model.LastName @Model.SecondLastName</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-info"><strong>TC:</strong></td>
+                                    <td>@Model.Tc</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-info"><strong>Place of Birth:</strong></td>
+                                    <td>@Model.PlaceOfBirth</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-info"><strong>Birth Date:</strong></td>
+                                    <td>@Model.BirthDate.ToShortDateString()</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-info"><strong>Title:</strong></td>
+                                    <td>@Model.Title</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-info"><strong>Department:</strong></td>
+                                    <td>@Model.DepartmentName</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-info"><strong>Company:</strong></td>
+                                    <td>@Model.CompanyName</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-info"><strong>Date of Recruitment:</strong></td>
+                                    <td>@Model.DateOfRecruitment.ToShortDateString()</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-info"><strong>E-mail:</strong></td>
+                                    <td>@Model.Email</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-info" style="white-space: normal"><strong>Address:</strong></td>
+                                    <td>@Model.Address</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-info"><strong>Phone:</strong></td>
+                                    <td>@Model.PhoneNumber</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <br />
+                        @if(role == "CompanyManager"){
+                            <a class="btn btn-outline-dark ml-2" asp-controller="CompanyManager" asp-action="Index">Main Page</a>
+                            <a class="btn btn-outline-primary ml-2" asp-controller="CompanyManager" asp-action="UpdateCompanyManager" asp-route-id="@Model.Id">Update</a>
+                        }
+                        else if(role == "SiteManager")
+                        {
+                            <a class="btn btn-outline-dark ml-2" asp-controller="Company" asp-action="CompanyDetails" asp-route-id="@Model.CompanyId">Go Back</a>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
